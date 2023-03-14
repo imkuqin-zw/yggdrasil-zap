@@ -1,0 +1,23 @@
+yggdrasil:
+  application:
+    namespace: "default"
+  client:
+    github.com.imkuqin_zw.yggdrasil_zap.example.server:
+      endpoints:
+        - address: "127.0.0.1:55879"
+          protocol: "grpc"
+  interceptor:
+    unaryClient: "logger"
+    streamClient: "logger"
+    config:
+      logger:
+        printReqAndRes: true
+
+  logger:
+    name: "zap"
+    level: "debug"
+
+zap:
+  console:
+    enable: true
+  addCaller: true

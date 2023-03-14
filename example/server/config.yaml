@@ -1,0 +1,27 @@
+yggdrasil:
+  application:
+    version: 2.0.0
+  server:
+    protocol:
+      - "grpc"
+
+  remote:
+    protocol:
+      grpc:
+        address: "127.0.0.1:55879"
+
+  interceptor:
+    unaryServer: "logger"
+    streamServer: "logger"
+    config:
+      logger:
+        printReqAndRes: true
+
+  logger:
+    name: "zap"
+    level: "debug"
+
+zap:
+  console:
+    enable: true
+  addCaller: true
