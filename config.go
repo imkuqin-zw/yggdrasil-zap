@@ -17,6 +17,7 @@ package zap
 import (
 	"time"
 
+	config2 "github.com/imkuqin-zw/yggdrasil/pkg/config"
 	"github.com/imkuqin-zw/yggdrasil/pkg/utils/xcolor"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -119,5 +120,7 @@ func (config *Config) Build() *Logger {
 			}
 		}
 	}
+
+	config.Level = config2.Get(config2.KeyLoggerLevel).String("debug")
 	return NewLogger(config)
 }
