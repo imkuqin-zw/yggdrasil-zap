@@ -114,11 +114,20 @@ func (lg *Logger) ZapLogger() *zap.Logger {
 	return lg.lg
 }
 
-func newLogger(lv *zap.AtomicLevel, config *Config) *Logger {
+func (lg *Logger) handleLvChange(lvStr string) {
+	var lv logger.Level
+	if err := lv.UnmarshalText([]byte(lvStr)); err != nil {
+		logger.ErrorFiled("fault to unmarshal logger level", logger.Err(err))
+	}
+	lg.SetLevel(lv)
+	return
+}
+
+func newLogger(lv *zap.AtomicLevel, cfg *Config) *Logger {
 	zapOptions := make([]zap.Option, 0)
 	zapOptions = append(zapOptions, zap.AddStacktrace(zap.PanicLevel))
-	if config.AddCaller {
-		zapOptions = append(zapOptions, zap.AddCaller(), zap.AddCallerSkip(config.CallerSkip))
+	if cfg.AddCaller {
+		zapOptions = append(zapOptions, zap.AddCaller(), zap.AddCallerSkip(cfg.CallerSkip))
 	}
 	cores := make([]zapcore.Core, 0, 1)
 	isErr := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
@@ -128,32 +137,42 @@ func newLogger(lv *zap.AtomicLevel, config *Config) *Logger {
 		return lvl < zapcore.ErrorLevel && lv.Level() <= lvl
 	})
 
-	if config.Console.Enable {
+	if cfg.Console.Enable {
 		var wsOut, wsErr = zapcore.Lock(os.Stdout), zapcore.Lock(os.Stderr)
-		var encoder = zapcore.NewConsoleEncoder(*config.Console.Encoder)
+		var encoder = zapcore.NewConsoleEncoder(*cfg.Console.Encoder)
 		cores = append(cores,
 			zapcore.NewCore(encoder, wsErr, isErr),
 			zapcore.NewCore(encoder, wsOut, isNotErr),
 		)
 	}
-	if config.File.Enable {
-		ws := zapcore.AddSync(getWriteSyncer(config))
-		encoder := zapcore.NewJSONEncoder(*config.File.Encoder)
+	if cfg.File.Enable {
+		ws := zapcore.AddSync(getWriteSyncer(cfg))
+		encoder := zapcore.NewJSONEncoder(*cfg.File.Encoder)
 		cores = append(cores, zapcore.NewCore(encoder, ws, lv))
 	}
 	lg := zap.New(zapcore.NewTee(cores...), zapOptions...)
-	return &Logger{
-		cfg:           config,
+	l := &Logger{
+		cfg:           cfg,
 		lg:            lg,
 		SugaredLogger: lg.Sugar(),
 		lv:            lv,
 	}
+	return l
 }
 
-func NewLogger(config *Config) *Logger {
+func NewLogger(cfg *Config) *Logger {
 	lv := zap.NewAtomicLevelAt(zapcore.InfoLevel)
-	if err := lv.UnmarshalText([]byte(config.Level)); err != nil {
+	if err := lv.UnmarshalText([]byte(cfg.Level)); err != nil {
 		panic(err)
 	}
-	return newLogger(&lv, config)
+	lg := newLogger(&lv, cfg)
+	if cfg.WatchLV {
+		err := config.AddWatcher(config.KeyLoggerLevel, func(event config.WatchEvent) {
+			lg.handleLvChange(event.Value().String(""))
+		})
+		if err != nil {
+			lg.lg.Fatal("fault to watch logger level", zap.Error(err))
+		}
+	}
+	return lg
 }

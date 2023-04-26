@@ -15,9 +15,10 @@ yggdrasil:
 
   logger:
     name: "zap"
-    level: "debug"
+    level: "error"
 
 zap:
+  watchLV: true
   console:
     enable: true
   addCaller: true

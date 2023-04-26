@@ -36,7 +36,7 @@ func (h *GreeterCircuitBreakerService) SayHello(_ context.Context, request *hell
 }
 
 func main() {
-	if err := config.LoadSource(file.NewSource("./config.yaml", false)); err != nil {
+	if err := config.LoadSource(file.NewSource("./config.yaml", true)); err != nil {
 		logger.FatalFiled("fault to load config file", logger.Err(err))
 	}
 	if err := yggdrasil.Run("github.com.imkuqin_zw.yggdrasil_zap.example.server",

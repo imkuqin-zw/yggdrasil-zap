@@ -12,8 +12,8 @@ github.com/go-logr/stdr v1.2.2/go.mod h1:mMo/vtBO5dYbehREoey6XUKy/eSumjCCveDpRre
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
-github.com/imkuqin-zw/yggdrasil v1.1.2 h1:wq1BMVUf028Xfo2TIMrrZx9GeS6kB8j7PzY/vxdE+aM=
-github.com/imkuqin-zw/yggdrasil v1.1.2/go.mod h1:b5vi78XgsKexaCLHnAEgKnfkH9GUUNXHHYkj3Eyi/B8=
+github.com/imkuqin-zw/yggdrasil v1.1.7 h1:AFpnNb9Y3aXz9KU2JfHuTuoVSJMp+ornFRtX1sCwAD0=
+github.com/imkuqin-zw/yggdrasil v1.1.7/go.mod h1:b5vi78XgsKexaCLHnAEgKnfkH9GUUNXHHYkj3Eyi/B8=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=

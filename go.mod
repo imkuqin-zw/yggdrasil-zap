@@ -3,7 +3,7 @@ module github.com/imkuqin-zw/yggdrasil-zap
 go 1.19
 
 require (
-	github.com/imkuqin-zw/yggdrasil v1.1.2
+	github.com/imkuqin-zw/yggdrasil v1.1.7
 	go.uber.org/zap v1.24.0
 	google.golang.org/genproto v0.0.0-20230216225411-c8e22ba71e44
 	google.golang.org/protobuf v1.28.1

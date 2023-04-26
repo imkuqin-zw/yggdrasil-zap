@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"time"
 
 	"github.com/imkuqin-zw/yggdrasil"
 	_ "github.com/imkuqin-zw/yggdrasil-zap"
@@ -28,14 +29,16 @@ import (
 )
 
 func main() {
-	if err := config.LoadSource(file.NewSource("./config.yaml", false)); err != nil {
+	if err := config.LoadSource(file.NewSource("./config.yaml", true)); err != nil {
 		logger.Fatal(err)
 	}
 	yggdrasil.Init("github.com.imkuqin_zw.yggdrasil_zap.example.client")
 	client := helloword.NewGreeterClient(yggdrasil.NewClient("github.com.imkuqin_zw.yggdrasil_zap.example.server"))
-	_, err := client.SayHello(context.TODO(), &helloword.HelloRequest{Name: "fdasf"})
-	if err != nil {
-		logger.Fatal(err)
+	for {
+		_, err := client.SayHello(context.TODO(), &helloword.HelloRequest{Name: "fdasf"})
+		if err != nil {
+			logger.Fatal(err)
+		}
+		time.Sleep(time.Second)
 	}
-
 }

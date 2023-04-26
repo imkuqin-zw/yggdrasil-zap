@@ -49,6 +49,7 @@ type BufferConfig struct {
 }
 
 type Config struct {
+	WatchLV    bool
 	Level      string
 	AddCaller  bool
 	CallerSkip int
