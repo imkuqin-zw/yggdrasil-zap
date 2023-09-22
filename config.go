@@ -41,6 +41,8 @@ type FileConfig struct {
 	MaxSize   int
 	MaxBackup int
 	MaxAge    int
+	LocalTime bool
+	Compress  bool
 }
 
 type BufferConfig struct {
@@ -49,7 +51,6 @@ type BufferConfig struct {
 }
 
 type Config struct {
-	WatchLV    bool
 	Level      string
 	AddCaller  bool
 	CallerSkip int
@@ -101,7 +102,6 @@ func (config *Config) Build() *Logger {
 			}
 		}
 	}
-
 	if config.Console.Enable {
 		if config.Console.Encoder == nil {
 			config.Console.Encoder = &zapcore.EncoderConfig{

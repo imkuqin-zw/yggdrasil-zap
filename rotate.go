@@ -42,7 +42,7 @@ func newFileSyncer(config *FileConfig) zapcore.WriteSyncer {
 		MaxSize:    config.MaxSize,
 		MaxBackups: config.MaxBackup,
 		MaxAge:     config.MaxAge,
-		LocalTime:  true,
-		Compress:   false,
+		LocalTime:  config.LocalTime,
+		Compress:   config.Compress,
 	})
 }
