@@ -37,11 +37,11 @@ func (h *GreeterCircuitBreakerService) SayHello(_ context.Context, request *hell
 
 func main() {
 	if err := config.LoadSource(file.NewSource("./config.yaml", true)); err != nil {
-		logger.FatalFiled("fault to load config file", logger.Err(err))
+		logger.FatalField("fault to load config file", logger.Err(err))
 	}
 	if err := yggdrasil.Run("github.com.imkuqin_zw.yggdrasil_zap.example.server",
 		yggdrasil.WithServiceDesc(&helloword.GreeterServiceDesc, &GreeterCircuitBreakerService{}),
 	); err != nil {
-		logger.FatalFiled("the application was ended forcefully ", logger.Err(err))
+		logger.FatalField("the application was ended forcefully ", logger.Err(err))
 	}
 }

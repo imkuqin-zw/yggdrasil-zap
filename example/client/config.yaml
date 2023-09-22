@@ -14,8 +14,8 @@ yggdrasil:
         printReqAndRes: true
 
   logger:
-    name: "zap"
-    level: "error"
+    writer: "zap"
+    level: "debug"
 
 zap:
   watchLV: true

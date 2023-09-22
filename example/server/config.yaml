@@ -20,8 +20,8 @@ yggdrasil:
         printReqAndRes: true
 
   logger:
-    name: "zap"
-    level: "info"
+    writer: "zap"
+    level: "debug"
 
 
 zap:

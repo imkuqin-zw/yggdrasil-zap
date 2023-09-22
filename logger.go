@@ -25,10 +25,10 @@ import (
 )
 
 func init() {
-	logger.RegisterConstructor("zap", func() logger.Logger {
+	logger.RegisterWriterBuilder("zap", func() logger.Writer {
 		cfg := &Config{}
 		if err := config.Get("zap").Scan(cfg); err != nil {
-			logger.FatalFiled("fault to load zap config", logger.Err(err))
+			logger.FatalField("fault to load zap config", logger.Err(err))
 		}
 		return cfg.Build()
 	})
@@ -49,79 +49,27 @@ func getWriteSyncer(cfg *Config) zapcore.WriteSyncer {
 }
 
 type Logger struct {
-	cfg *Config
-	lg  *zap.Logger
-	*zap.SugaredLogger
-	lv *zap.AtomicLevel
+	cfg   *Config
+	sugar *zap.SugaredLogger
+	lv    *zap.AtomicLevel
 }
 
-func (lg *Logger) Clone() logger.Logger {
-	lv := zap.NewAtomicLevelAt(zapcore.InfoLevel)
-	lv.SetLevel(lg.Level())
-	return newLogger(&lv, lg.cfg)
-}
-
-var _ logger.Logger = (*Logger)(nil)
-
-func (lg *Logger) SetLevel(lv logger.Level) {
+func (lg *Logger) Write(lv logger.Level, msg string, kvs ...interface{}) {
 	switch lv {
 	case logger.LvDebug:
-		lg.lv.SetLevel(zap.DebugLevel)
+		lg.sugar.Debugw(msg, kvs...)
 	case logger.LvInfo:
-		lg.lv.SetLevel(zap.InfoLevel)
+		lg.sugar.Infow(msg, kvs...)
 	case logger.LvWarn:
-		lg.lv.SetLevel(zap.WarnLevel)
+		lg.sugar.Warnw(msg, kvs...)
 	case logger.LvError:
-		lg.lv.SetLevel(zap.ErrorLevel)
+		lg.sugar.Errorw(msg, kvs...)
 	case logger.LvFault:
-		lg.lv.SetLevel(zap.FatalLevel)
+		lg.sugar.Fatalw(msg, kvs...)
 	}
 }
 
-func (lg *Logger) Enable(lv logger.Level) bool {
-	switch lv {
-	case logger.LvDebug:
-		return lg.lv.Enabled(zap.DebugLevel)
-	case logger.LvInfo:
-		return lg.lv.Enabled(zap.InfoLevel)
-	case logger.LvWarn:
-		return lg.lv.Enabled(zap.WarnLevel)
-	case logger.LvError:
-		return lg.lv.Enabled(zap.ErrorLevel)
-	case logger.LvFault:
-		return lg.lv.Enabled(zap.FatalLevel)
-	}
-	return false
-}
-
-func (lg *Logger) GetLevel() logger.Level {
-	switch lg.lv.Level() {
-	case zap.DebugLevel:
-		return logger.LvDebug
-	case zap.InfoLevel:
-		return logger.LvInfo
-	case zap.WarnLevel:
-		return logger.LvWarn
-	case zap.ErrorLevel:
-		return logger.LvError
-	case zap.FatalLevel:
-		return logger.LvFault
-	}
-	return logger.LvDebug
-}
-
-func (lg *Logger) ZapLogger() *zap.Logger {
-	return lg.lg
-}
-
-func (lg *Logger) handleLvChange(lvStr string) {
-	var lv logger.Level
-	if err := lv.UnmarshalText([]byte(lvStr)); err != nil {
-		logger.ErrorFiled("fault to unmarshal logger level", logger.Err(err))
-	}
-	lg.SetLevel(lv)
-	return
-}
+var _ logger.Writer = (*Logger)(nil)
 
 func newLogger(lv *zap.AtomicLevel, cfg *Config) *Logger {
 	zapOptions := make([]zap.Option, 0)
@@ -152,10 +100,9 @@ func newLogger(lv *zap.AtomicLevel, cfg *Config) *Logger {
 	}
 	lg := zap.New(zapcore.NewTee(cores...), zapOptions...)
 	l := &Logger{
-		cfg:           cfg,
-		lg:            lg,
-		SugaredLogger: lg.Sugar(),
-		lv:            lv,
+		cfg:   cfg,
+		sugar: lg.Sugar(),
+		lv:    lv,
 	}
 	return l
 }
@@ -166,13 +113,5 @@ func NewLogger(cfg *Config) *Logger {
 		panic(err)
 	}
 	lg := newLogger(&lv, cfg)
-	if cfg.WatchLV {
-		err := config.AddWatcher(config.KeyLoggerLevel, func(event config.WatchEvent) {
-			lg.handleLvChange(event.Value().String(""))
-		})
-		if err != nil {
-			lg.lg.Fatal("fault to watch logger level", zap.Error(err))
-		}
-	}
 	return lg
 }

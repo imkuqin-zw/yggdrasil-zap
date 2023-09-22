@@ -17,6 +17,7 @@ package zap
 import (
 	"testing"
 
+	"github.com/imkuqin-zw/yggdrasil/pkg/logger"
 	"go.uber.org/zap/zapcore"
 )
 
@@ -29,6 +30,11 @@ func Test_Logger(t *testing.T) {
 		A string
 		B int
 	}{"a", 2}
-	lg.Warn("fdaf", "k1", 1, "k2", dd)
-	lg.Fatalf("fault test")
+	lg.Write(logger.LvDebug, "fdaf", "k1", 1, "k2", dd)
+	//zap.L().Debug("fdasfadsf", zap.String("fdsf", "fdaf"))
+	//lg.Fatalf("fault test")
+	logger.SetWriter(lg)
+	logger.DebugField("fdafasdf", logger.String("test", "fdas"))
+	//h := logger.WithFields(logger.String("plugins", "zap"))
+	//h.DebugField("fdafdsaf", logger.String("k1", "k2"))
 }
